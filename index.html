@@ -524,13 +524,16 @@ async function enterApp(){
 }
 
 function doLogout(){
-  CU=null;SEL=null;clearCU();
-  // 토스트 즉시 제거
+  CU=null;SEL=null;
+  clearCU();
+  _resCache={};
   const t=document.getElementById('toast');
   t.classList.remove('show');
   clearTimeout(tt);
-  document.getElementById('login').style.display='flex';
   document.getElementById('app').style.display='none';
+  document.getElementById('login').style.display='flex';
+  document.getElementById('nb-admin').classList.add('hidden');
+  document.getElementById('bnav-admin').classList.add('hidden');
   document.getElementById('inp-id').value='';
   document.getElementById('inp-name').value='';
 }
@@ -828,8 +831,12 @@ window.addEventListener('load',async()=>{
   document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('login').style.display!=='none')doLogin();});
 
   const saved=getCU();
-  if(saved){CU=saved;await enterApp();}
-  else{document.getElementById('tlock').classList.toggle('hidden',canBook());}
+  if(saved && saved.id){
+    CU=saved;
+    await enterApp();
+  } else {
+    document.getElementById('tlock').classList.toggle('hidden',canBook());
+  }
 });
 </script>
 </body>
