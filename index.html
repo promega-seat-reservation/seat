@@ -182,7 +182,7 @@ tr:hover td{background:var(--surface)}
     <div class="lg-sub">이메일 아이디와 이름으로 로그인하세요</div>
     <div class="tlock hidden" id="tlock">
       <strong>🔒 예약 가능 시간이 아닙니다</strong><br>
-      오전 06:00 이후부터 예약할 수 있습니다 · <span id="lock-time">--:--</span>
+      오전 06:50 이후부터 예약할 수 있습니다 · <span id="lock-time">--:--</span>
     </div>
     <div class="f-group">
       <label class="f-label">이메일 아이디</label>
@@ -197,7 +197,7 @@ tr:hover td{background:var(--surface)}
     </div>
     <button class="lg-btn" id="btn-login">로그인 →</button>
     <div class="lg-policy">
-      <span class="hl">⏰ 운영 정책</span> · 예약 가능: <span class="hl">06:00~23:59</span> · 매일 <span class="hl">자정 00:00</span> 전체 초기화
+      <span class="hl">⏰ 운영 정책</span> · 예약 가능: <span class="hl">06:50~23:59</span> · 매일 <span class="hl">자정 00:00</span> 전체 초기화
     </div>
   </div>
 </div>
@@ -402,7 +402,7 @@ const getRes=()=>_resCache;
 let CU=null,SEL=null,tt=null;
 const seatPos={};
 const isMobile=()=>window.innerWidth<=768;
-const canBook=()=>new Date().getHours()>=6;
+const canBook=()=>{const h=new Date().getHours(),m=new Date().getMinutes();return h>6||(h===6&&m>=50);};
 SEATS.forEach(([id,l,t,w,h])=>{seatPos[id]={l,t,w,h};});
 
 // Sheet 함수
@@ -444,9 +444,12 @@ function hideToast(){
 
 // 자정 초기화 체크
 function checkMidnightReset(){
-  const today=new Date().toISOString().slice(0,10);
+  const now=new Date();
+  const today=now.toISOString().slice(0,10);
   const lastDate=localStorage.getItem('pk_last_date');
-  if(lastDate&&lastDate!==today) _resCache={};
+  if(lastDate&&lastDate!==today){
+    _resCache={};
+  }
   localStorage.setItem('pk_last_date',today);
 }
 
@@ -752,14 +755,13 @@ function renderAdmin(){
   renderUserList();
 }
 
-// 즉시 초기화
 async function adminReset(){
-  if(!confirm('모든 예약을 초기화하시겠습니까?'))return;
+  if(!confirm('오늘 예약 현황을 초기화하시겠습니까?'))return;
+  showToast('⏳ 초기화 중...');
   const today=new Date().toISOString().slice(0,10);
-  const res=getRes();
-  for(const sid of Object.keys(res)){
-    await cancelFromSheet(today,sid);
-  }
+  const p=new URLSearchParams({action:'resetToday',date:today});
+  await fetch(SHEET_URL+'?'+p.toString());
+  _resCache={};
   await loadFromSheet();
   showToast('🔄 전체 예약 초기화 완료');
   renderAdmin();renderMap();
