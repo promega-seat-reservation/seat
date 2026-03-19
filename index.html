@@ -386,7 +386,7 @@ const SEATS = [
   ['036',813,145,28,20],['037',814,167,28,20],['038',813,216,28,20],
 ];
 const TOTAL = SEATS.length;
-const SHEET_URL = 'https://script.google.com/macros/s/AKfycby4sktMRmkAXbOOQiRz8tZNWkskcV9SNyDsTJF0EOzfl4wMk5cgG4HUJ2OelGhz9pwY/exec';
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbzGFSStcvhjaoPgg0jofBwXfPfrQs2-EZE7Q373rfVYC5TI9FrbXls_GKEcisXd4QfW/exec';
 
 const DEFAULT_USERS = {
   'soohyun.kwon':{name:'권수현',isAdmin:false},'jungeun.kwon':{name:'권정은',isAdmin:false},
@@ -417,9 +417,10 @@ const DEFAULT_USERS = {
   'jiwon.hwang':{name:'황지원',isAdmin:false},
 };
 
-const SKEY=()=>'pk_res_'+new Date().toISOString().slice(0,10);
-const getRes=()=>{try{return JSON.parse(localStorage.getItem(SKEY()))||{};}catch{return{};}};
-const saveRes=d=>localStorage.setItem(SKEY(),JSON.stringify(d));
+// 메모리 캐시 (Sheets 데이터 기준)
+let _resCache = {};
+const getRes = () => _resCache;
+const saveRes = d => { _resCache = d; };
 const getUsers=()=>{try{const s=localStorage.getItem('pk_users');return s?JSON.parse(s):{...DEFAULT_USERS};}catch{return{...DEFAULT_USERS};}};
 const saveUsers=d=>localStorage.setItem('pk_users',JSON.stringify(d));
 const getCU=()=>{try{const s=localStorage.getItem('pk_cu');return s?JSON.parse(s):null;}catch{return null;}};
@@ -433,11 +434,18 @@ const canBook=()=>new Date().getHours()>=6;
 SEATS.forEach(([id,l,t,w,h])=>{seatPos[id]={l,t,w,h};});
 
 // Sheet 함수
-async function appendToSheet(date,seatId,userName,userId){
-  try{await fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'reserve',date,seatId,userName,userId})});}catch(e){console.error(e);}
+async function appendToSheet(date, seatId, userName, userId) {
+  try {
+    const params = new URLSearchParams({action:'reserve', date, seatId, userName, userId});
+    await fetch(SHEET_URL + '?' + params.toString());
+  } catch(e){ console.error(e); }
 }
-async function cancelFromSheet(date,seatId){
-  try{await fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'cancel',date,seatId})});}catch(e){console.error(e);}
+
+async function cancelFromSheet(date, seatId) {
+  try {
+    const params = new URLSearchParams({action:'cancel', date, seatId});
+    await fetch(SHEET_URL + '?' + params.toString());
+  } catch(e){ console.error(e); }
 }
 async function loadFromSheet(){
   try{
@@ -515,6 +523,10 @@ async function enterApp(){
 
 function doLogout(){
   CU=null;SEL=null;clearCU();
+  // 토스트 즉시 제거
+  const t=document.getElementById('toast');
+  t.classList.remove('show');
+  clearTimeout(tt);
   document.getElementById('login').style.display='flex';
   document.getElementById('app').style.display='none';
   document.getElementById('inp-id').value='';
@@ -669,7 +681,9 @@ async function doReserve(id){
   const res=getRes();
   if(Object.values(res).some(r=>r.userId===CU.id)){showToast('오늘 이미 예약된 좌석이 있습니다');return;}
   if(res[id]){showToast('이미 예약된 좌석입니다');return;}
-  showToast('⏳ 예약 중...');
+  // 즉시 로컬 캐시에 반영
+  _resCache[id]={userId:CU.id,userName:CU.name,reservedAt:''};
+  renderMap();
   const today=new Date().toISOString().slice(0,10);
   await appendToSheet(today,id,CU.name,CU.id+'@promega.com');
   await loadFromSheet();
@@ -680,7 +694,9 @@ async function doReserve(id){
 
 async function doCancel(id){
   const res=getRes();if(!res[id]||res[id].userId!==CU.id)return;
-  showToast('⏳ 반납 중...');
+  // 즉시 로컬 캐시에서 제거
+  delete _resCache[id];
+  renderMap();
   const today=new Date().toISOString().slice(0,10);
   await cancelFromSheet(today,id);
   await loadFromSheet();
