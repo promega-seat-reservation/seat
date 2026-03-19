@@ -168,7 +168,7 @@ tr:last-child td{border-bottom:none}
 tr:hover td{background:var(--surface)}
 .mono{font-family:'DM Mono',monospace;font-size:11px}
 
-.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--dark);color:#fff;padding:10px 20px;border-radius:40px;font-size:12px;font-weight:500;z-index:9999;border:1px solid rgba(253,184,19,0.22);box-shadow:0 8px 32px rgba(0,0,0,0.28);opacity:0;transition:opacity .25s,transform .25s;pointer-events:none}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--dark);color:#fff;padding:10px 20px;border-radius:40px;font-size:12px;font-weight:500;z-index:9999;border:1px solid rgba(253,184,19,0.22);box-shadow:0 8px 32px rgba(0,0,0,0.28);opacity:0;transition:opacity .25s ease,transform .25s ease;pointer-events:none}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.12);border-radius:2px}
@@ -455,9 +455,9 @@ function checkMidnightReset(){
   const today = new Date().toISOString().slice(0,10);
   const lastDate = localStorage.getItem('pk_last_date');
   if(lastDate && lastDate !== today) {
-    // 날짜가 바뀌었으면 초기화
     localStorage.removeItem('pk_res_' + lastDate);
     showToast('🔄 날짜가 바뀌어 예약이 초기화되었습니다');
+    renderMap();
   }
   localStorage.setItem('pk_last_date', today);
 }
@@ -503,6 +503,7 @@ async function enterApp(){
   document.getElementById('ms-date').textContent=new Date().toLocaleDateString('ko-KR',{month:'long',day:'numeric',weekday:'short'});
   document.getElementById('huser').innerHTML=`<strong>${CU.name}</strong>`;
   startClock();
+  setMapBg();
   checkMidnightReset();
   await loadFromSheet();
   renderMap();
@@ -595,11 +596,7 @@ function renderMap(){
 
   ['fp','fp-mobile'].forEach(fpId=>{
     const fp=document.getElementById(fpId);
-    if(!fp) return;
-    fp.style.backgroundImage="url('https://i.imgur.com/dNX783P.png')";
-    fp.style.backgroundSize='contain';
-    fp.style.backgroundRepeat='no-repeat';
-    fp.style.backgroundPosition='center';
+    if(fp&&!fp.style.backgroundImage) setMapBg();
   });
 }
 
