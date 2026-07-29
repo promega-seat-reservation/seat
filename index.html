@@ -198,7 +198,7 @@ tr:hover td{background:var(--surface)}
     <div class="lg-sub">이메일 아이디와 이름으로 로그인하세요</div>
     <div class="tlock hidden" id="tlock">
       <strong>🔒 예약 가능 시간이 아닙니다</strong><br>
-      오전 06:50 이후부터 예약할 수 있습니다
+      오전 06:30 이후부터 예약할 수 있습니다
     </div>
     <div class="f-group">
       <label class="f-label">이메일 아이디</label>
@@ -217,7 +217,7 @@ tr:hover td{background:var(--surface)}
     </div>
     <button class="lg-btn" id="btn-login">로그인 →</button>
     <div class="lg-policy">
-      <span class="hl">⏰ 운영 정책</span> · 예약 가능: <span class="hl">06:50~23:59</span> · 매일 <span class="hl">자정 00:00</span> 전체 초기화
+      <span class="hl">⏰ 운영 정책</span> · 예약 가능: <span class="hl">06:30~23:59</span> · 매일 <span class="hl">자정 00:00</span> 전체 초기화
     </div>
   </div>
 </div>
@@ -438,7 +438,7 @@ const getRes=()=>_resCache;
 let CU=null,SEL=null,clockTimer=null,syncTimer=null;
 const seatPos={};
 const isMobile=()=>window.innerWidth<=768;
-const canBook=()=>{const h=new Date().getHours(),m=new Date().getMinutes();return h>6||(h===6&&m>=50);};
+const canBook=()=>{const h=new Date().getHours(),m=new Date().getMinutes();return h>6||(h===6&&m>=30);};
 SEATS.forEach(([id,l,t,w,h])=>{seatPos[id]={l,t,w,h};});
 
 // Sheet
@@ -663,7 +663,7 @@ function clickSeat(id){
     }
   }else{
     sH=`<div class="det-status" style="color:var(--green)">● 예약 가능</div>`;
-    bH=`<button class="abt res" id="btn-reserve-${id}" ${!ok?'disabled':''}>${ok?'이 좌석 예약하기':'🔒 06:50 이후 예약 가능'}</button>`;
+    bH=`<button class="abt res" id="btn-reserve-${id}" ${!ok?'disabled':''}>${ok?'이 좌석 예약하기':'🔒 06:30 이후 예약 가능'}</button>`;
   }
   document.getElementById('sbdet').innerHTML=`
     <div class="det-card"><div class="det-num">${id}</div>${sH}</div>
@@ -691,7 +691,7 @@ function clickSeatMobile(id){
   }else{
     html=`<div class="bs-num">${id}</div>
       <div class="bs-status" style="color:var(--green)">● 예약 가능</div>
-      <button class="bs-btn res" id="m-reserve-${id}" ${!ok?'disabled':''}>${ok?'이 좌석 예약하기':'🔒 06:50 이후 예약 가능'}</button>`;
+      <button class="bs-btn res" id="m-reserve-${id}" ${!ok?'disabled':''}>${ok?'이 좌석 예약하기':'🔒 06:30 이후 예약 가능'}</button>`;
   }
   document.getElementById('bs-content').innerHTML=html;
   document.getElementById(`m-reserve-${id}`)?.addEventListener('click',()=>{doReserve(id);closeSheet();});
@@ -709,7 +709,7 @@ function closeSheet(){
 // 예약
 async function doReserve(id){
   if(!CU){showToast('로그인이 필요합니다');return;}
-  if(!canBook()){showToast('⏰ 06:50 이후부터 예약 가능합니다');return;}
+  if(!canBook()){      showToast('⏰ 06:30 이후부터 예약 가능합니다');return;}
   const res=getRes();
   if(Object.values(res).some(r=>r.userId===CU.id)){showToast('오늘 이미 예약된 좌석이 있습니다');return;}
   if(res[id]){showToast('이미 예약된 좌석입니다');return;}
