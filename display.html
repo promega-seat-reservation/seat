@@ -10,37 +10,30 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:#f5f5f5;overflow:hidden}
 
-/* 대기 화면 */
 #welcome{position:fixed;inset:0;background:#f5f5f5;display:flex;flex-direction:column;cursor:pointer;z-index:10;transition:opacity .4s}
 #welcome.hide{opacity:0;pointer-events:none}
 
-/* 상단 바 */
 .wc-topbar{height:72px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 40px;border-bottom:1px solid #e8e8e8;flex-shrink:0}
 .wc-topbar-logo{height:36px}
-.wc-topbar-right{display:flex;align-items:center;gap:16px;font-size:18px;font-weight:600;color:#333}
-.wc-topbar-date{color:#555;font-size:18px}
+.wc-topbar-right{display:flex;align-items:center;gap:16px}
+.wc-topbar-date{color:#555;font-size:18px;font-weight:600}
 .wc-topbar-time{background:var(--gold);color:var(--dark);font-weight:900;padding:6px 16px;border-radius:8px;font-size:20px}
 
-/* 로고 섹션 - 흰색 */
 .wc-logo-section{background:#fff;display:flex;align-items:center;justify-content:center;padding:28px 40px;border-bottom:1px solid #e8e8e8;flex-shrink:0}
 .wc-center-logo{height:72px}
 
-/* 서브텍스트 섹션 - 회색 */
-.wc-sub-section{background:#f5f5f5;display:flex;align-items:center;justify-content:center;padding:48px 40px;border-bottom:1px solid #e8e8e8;flex-shrink:0}
-.wc-sub{font-size:28px;color:#666;font-weight:400;text-align:center}
+.wc-sub-section{background:#f5f5f5;display:flex;align-items:center;justify-content:center;padding:36px 40px;border-bottom:1px solid #e8e8e8;flex-shrink:0}
+.wc-sub{font-size:32px;color:#666;font-weight:400;text-align:center}
 
-/* 메인타이틀 섹션 - 흰색 */
-.wc-title-section{background:#fff;flex:1;display:flex;align-items:center;justify-content:center;padding:40px}
-.wc-title{font-size:clamp(32px,4vw,52px);font-weight:900;color:#1a1a1a;text-align:center}
+.wc-title-section{background:#fff;flex:none;height:220px;display:flex;align-items:center;justify-content:center;padding:40px}
+.wc-title{font-size:clamp(28px,3.2vw,44px);font-weight:900;color:#1a1a1a;text-align:center;white-space:nowrap}
 
-/* 하단 힌트 */
-.wc-footer{height:120px;background:#2a2a2a;display:flex;align-items:center;justify-content:center;gap:18px;flex-shrink:0}
+.wc-footer{height:120px;background:#2a2a2a;display:flex;align-items:center;justify-content:center;gap:18px;flex-shrink:0;margin-top:auto}
 .wc-hint-icon{font-size:44px;animation:pulse 2s ease-in-out infinite}
 .wc-hint-text{color:#fff;font-size:26px;font-weight:500}
 .wc-hint-text strong{color:var(--gold)}
 @keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
 
-/* 현황 화면 */
 #display{position:fixed;inset:0;background:#E8E5DE;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .4s}
 #display.show{opacity:1;pointer-events:all}
 
@@ -52,9 +45,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:#f5f5f5;o
 .dp-clock{color:rgba(255,255,255,0.4);font-size:12px;font-family:'DM Mono',monospace}
 .dp-back-timer{background:rgba(253,184,19,0.15);border:1px solid rgba(253,184,19,0.3);color:var(--gold);font-size:11px;padding:4px 12px;border-radius:20px;font-family:'DM Mono',monospace}
 .dp-back-btn{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.7);font-size:12px;padding:5px 14px;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:600}
-.dp-back-btn:hover{background:rgba(255,255,255,0.18);color:#fff}
 
-/* 맵 영역 */
 .dp-body{flex:1;display:flex;overflow:hidden}
 .dp-sidebar{width:220px;flex-shrink:0;background:var(--white);border-right:1px solid rgba(0,0,0,0.08);display:flex;flex-direction:column;padding:16px}
 .dp-sb-title{font-size:12px;font-weight:700;margin-bottom:12px}
@@ -67,17 +58,15 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:#f5f5f5;o
 .dp-sn{font-size:20px;font-weight:900;font-family:'DM Mono',monospace;line-height:1}
 .dp-sl{font-size:9px;color:var(--muted);margin-top:2px}
 
-.dp-map-area{flex:1;overflow:auto;background:#C8C4BC;padding:16px;display:flex;align-items:flex-start;justify-content:flex-start}
+.dp-map-area{flex:1;overflow:auto;background:#C8C4BC;padding:16px}
 .fp{position:relative;width:850px;height:547px;flex-shrink:0;background:#E8E4DC;border-radius:6px;box-shadow:0 12px 48px rgba(0,0,0,0.22);overflow:hidden;background-image:url('https://i.imgur.com/dNX783P.png');background-size:contain;background-repeat:no-repeat;background-position:center}
 .fp-border{position:absolute;inset:0;border:3px solid rgba(90,85,80,0.4);border-radius:6px;z-index:3;pointer-events:none}
-.seat{position:absolute;z-index:10;border-radius:3px;border:1.5px solid transparent;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;font-family:'DM Mono',monospace;overflow:hidden;word-break:break-all;text-align:center;line-height:1.1}
+.seat{position:absolute;z-index:10;border-radius:3px;border:1.5px solid transparent;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;font-family:'DM Mono',monospace;overflow:hidden;text-align:center;line-height:1.1}
 .seat.avail{background:rgba(46,165,90,0.82);border-color:#1A7A40;color:rgba(255,255,255,0.95)}
 .seat.taken{background:rgba(214,48,48,0.88);border-color:#A01818;color:rgba(255,255,255,0.92)}
 
-/* 설정 버튼 */
 #settings-btn{position:fixed;bottom:16px;right:16px;z-index:100;background:rgba(0,0,0,0.2);border:none;border-radius:50%;width:38px;height:38px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 
-/* 설정 패널 */
 #settings-panel{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;display:none;align-items:center;justify-content:center}
 #settings-panel.open{display:flex}
 .sp-card{background:#fff;border-radius:20px;padding:32px;width:440px}
@@ -93,7 +82,6 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:#f5f5f5;o
 </head>
 <body>
 
-<!-- 대기 화면 -->
 <div id="welcome">
   <div class="wc-topbar">
     <img class="wc-topbar-logo" src="https://i.imgur.com/JnhzyCk.png" alt="Promega">
@@ -117,7 +105,6 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:#f5f5f5;o
   </div>
 </div>
 
-<!-- 현황 화면 -->
 <div id="display">
   <div class="dp-hdr">
     <div class="dp-logo-wrap">
@@ -178,7 +165,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:#f5f5f5;o
 </div>
 
 <script>
-const SHEET_URL='https://script.google.com/macros/s/AKfycbxEDWqIvmNvhX8_vt4vLruS9rwwV1Z23objsGY19PdEaGQ37OoZXcA7xB2ArvHd7O7tXw/exec';
+const SHEET_URL='https://script.google.com/macros/s/AKfycbzv9yghSn2X1u4W8R0ONaEQPqG3VlxOfPD6VnBkaa8LUPKO4rVQJEzrpzIZYvzbdQEF1A/exec';
 const SEATS=[
   ['001',229,129,28,20],['002',265,129,28,20],
   ['003',185,168,20,28],['004',185,202,20,28],
@@ -204,11 +191,9 @@ const TOTAL=SEATS.length;
 function getConfig(){try{return JSON.parse(localStorage.getItem('pk_display_config'))||{};}catch{return{};}}
 function saveConfig(c){localStorage.setItem('pk_display_config',JSON.stringify(c));}
 
-let backTimer=null, isDisplay=false;
-
+let backTimer=null,isDisplay=false;
 function getBackSecs(){return parseInt(getConfig().timer)||30;}
 
-// 시계
 function updateClock(){
   const n=new Date();
   document.getElementById('wc-time').textContent=n.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
@@ -217,13 +202,11 @@ function updateClock(){
   document.getElementById('dp-date').textContent=n.toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'short'});
 }
 
-// Sheets 로드
 async function loadSeats(){
   try{const r=await fetch(SHEET_URL+'?t='+Date.now());return await r.json();}
   catch(e){console.error(e);return{};}
 }
 
-// 맵 렌더링
 function renderMap(data){
   const layer=document.getElementById('slayer');
   layer.innerHTML='';
@@ -243,7 +226,6 @@ function renderMap(data){
   document.getElementById('dp-taken').textContent=taken;
 }
 
-// 현황 화면 열기
 async function showDisplay(){
   if(isDisplay)return;
   isDisplay=true;
@@ -255,7 +237,6 @@ async function showDisplay(){
   startBackTimer();
 }
 
-// 대기 화면 복귀
 function showWelcome(){
   isDisplay=false;
   document.getElementById('display').classList.remove('show');
@@ -263,7 +244,6 @@ function showWelcome(){
   clearInterval(backTimer);
 }
 
-// 복귀 타이머
 function startBackTimer(){
   clearInterval(backTimer);
   let secs=getBackSecs();
@@ -275,29 +255,26 @@ function startBackTimer(){
   },1000);
 }
 
-// 환영 메시지 적용
 function applyConfig(){
   const cfg=getConfig();
-  if(cfg.title){document.getElementById('wc-title').innerHTML=cfg.title.replace(/\\n/g,'<br>');}
   if(cfg.sub){document.getElementById('wc-sub').textContent=cfg.sub;}
-  document.getElementById('sp-title').value=cfg.title||'';
+  if(cfg.title){document.getElementById('wc-title').textContent=cfg.title;}
   document.getElementById('sp-sub').value=cfg.sub||'';
+  document.getElementById('sp-title').value=cfg.title||'';
   document.getElementById('sp-timer').value=cfg.timer||30;
 }
 
-// 이벤트
 document.getElementById('welcome').addEventListener('click',showDisplay);
 document.getElementById('dp-back-btn').addEventListener('click',(e)=>{e.stopPropagation();showWelcome();});
 document.getElementById('settings-btn').addEventListener('click',(e)=>{
-  e.stopPropagation();
-  applyConfig();
+  e.stopPropagation();applyConfig();
   document.getElementById('settings-panel').classList.add('open');
 });
 document.getElementById('sp-cancel').addEventListener('click',()=>document.getElementById('settings-panel').classList.remove('open'));
 document.getElementById('sp-save').addEventListener('click',()=>{
   const cfg={
-    title:document.getElementById('sp-title').value.trim()||undefined,
     sub:document.getElementById('sp-sub').value.trim()||undefined,
+    title:document.getElementById('sp-title').value.trim()||undefined,
     timer:document.getElementById('sp-timer').value.trim()||undefined,
   };
   saveConfig(cfg);applyConfig();
