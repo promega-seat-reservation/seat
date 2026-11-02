@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Promega Korea | Welcome Display</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#FDB813;--dark:#161616;--white:#fff;--green:#2EA55A;--red:#D63030;--muted:#888}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:#f5f5f5;overflow:hidden}
+
+/* 대기 화면 */
+#welcome{position:fixed;inset:0;background:#f5f5f5;display:flex;flex-direction:column;cursor:pointer;z-index:10;transition:opacity .4s}
+#welcome.hide{opacity:0;pointer-events:none}
+
+/* 상단 바 */
+.wc-topbar{height:72px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 40px;border-bottom:1px solid #e8e8e8;flex-shrink:0}
+.wc-topbar-logo{height:36px}
+.wc-topbar-right{display:flex;align-items:center;gap:16px;font-size:18px;font-weight:600;color:#333}
+.wc-topbar-date{color:#555;font-size:18px}
+.wc-topbar-time{background:var(--gold);color:var(--dark);font-weight:900;padding:6px 16px;border-radius:8px;font-size:20px}
+
+/* 로고 섹션 - 흰색 */
+.wc-logo-section{background:#fff;display:flex;align-items:center;justify-content:center;padding:28px 40px;border-bottom:1px solid #e8e8e8;flex-shrink:0}
+.wc-center-logo{height:72px}
+
+/* 서브텍스트 섹션 - 회색 */
+.wc-sub-section{background:#f5f5f5;display:flex;align-items:center;justify-content:center;padding:48px 40px;border-bottom:1px solid #e8e8e8;flex-shrink:0}
+.wc-sub{font-size:28px;color:#666;font-weight:400;text-align:center}
+
+/* 메인타이틀 섹션 - 흰색 */
+.wc-title-section{background:#fff;flex:1;display:flex;align-items:center;justify-content:center;padding:40px}
+.wc-title{font-size:clamp(32px,4vw,52px);font-weight:900;color:#1a1a1a;text-align:center}
+
+/* 하단 힌트 */
+.wc-footer{height:120px;background:#2a2a2a;display:flex;align-items:center;justify-content:center;gap:18px;flex-shrink:0}
+.wc-hint-icon{font-size:44px;animation:pulse 2s ease-in-out infinite}
+.wc-hint-text{color:#fff;font-size:26px;font-weight:500}
+.wc-hint-text strong{color:var(--gold)}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+
+/* 현황 화면 */
+#display{position:fixed;inset:0;background:#E8E5DE;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .4s}
+#display.show{opacity:1;pointer-events:all}
+
+.dp-hdr{height:56px;background:var(--dark);flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 28px;border-bottom:1px solid rgba(253,184,19,0.1)}
+.dp-logo-wrap{display:flex;align-items:center;gap:10px}
+.dp-mark{width:30px;height:30px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:var(--dark)}
+.dp-title{color:#fff;font-size:14px;font-weight:700}
+.dp-hdr-r{display:flex;align-items:center;gap:14px}
+.dp-clock{color:rgba(255,255,255,0.4);font-size:12px;font-family:'DM Mono',monospace}
+.dp-back-timer{background:rgba(253,184,19,0.15);border:1px solid rgba(253,184,19,0.3);color:var(--gold);font-size:11px;padding:4px 12px;border-radius:20px;font-family:'DM Mono',monospace}
+.dp-back-btn{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.7);font-size:12px;padding:5px 14px;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:600}
+.dp-back-btn:hover{background:rgba(255,255,255,0.18);color:#fff}
+
+/* 맵 영역 */
+.dp-body{flex:1;display:flex;overflow:hidden}
+.dp-sidebar{width:220px;flex-shrink:0;background:var(--white);border-right:1px solid rgba(0,0,0,0.08);display:flex;flex-direction:column;padding:16px}
+.dp-sb-title{font-size:12px;font-weight:700;margin-bottom:12px}
+.dp-sb-date{font-size:10px;color:var(--muted);margin-bottom:16px}
+.dp-legend{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+.dp-li{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted)}
+.dp-ld{width:10px;height:10px;border-radius:3px}
+.dp-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.dp-st{background:#F0EDE6;border-radius:8px;padding:8px 4px;text-align:center}
+.dp-sn{font-size:20px;font-weight:900;font-family:'DM Mono',monospace;line-height:1}
+.dp-sl{font-size:9px;color:var(--muted);margin-top:2px}
+
+.dp-map-area{flex:1;overflow:auto;background:#C8C4BC;padding:16px;display:flex;align-items:flex-start;justify-content:flex-start}
+.fp{position:relative;width:850px;height:547px;flex-shrink:0;background:#E8E4DC;border-radius:6px;box-shadow:0 12px 48px rgba(0,0,0,0.22);overflow:hidden;background-image:url('https://i.imgur.com/dNX783P.png');background-size:contain;background-repeat:no-repeat;background-position:center}
+.fp-border{position:absolute;inset:0;border:3px solid rgba(90,85,80,0.4);border-radius:6px;z-index:3;pointer-events:none}
+.seat{position:absolute;z-index:10;border-radius:3px;border:1.5px solid transparent;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;font-family:'DM Mono',monospace;overflow:hidden;word-break:break-all;text-align:center;line-height:1.1}
+.seat.avail{background:rgba(46,165,90,0.82);border-color:#1A7A40;color:rgba(255,255,255,0.95)}
+.seat.taken{background:rgba(214,48,48,0.88);border-color:#A01818;color:rgba(255,255,255,0.92)}
+
+/* 설정 버튼 */
+#settings-btn{position:fixed;bottom:16px;right:16px;z-index:100;background:rgba(0,0,0,0.2);border:none;border-radius:50%;width:38px;height:38px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+/* 설정 패널 */
+#settings-panel{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;display:none;align-items:center;justify-content:center}
+#settings-panel.open{display:flex}
+.sp-card{background:#fff;border-radius:20px;padding:32px;width:440px}
+.sp-title{font-size:17px;font-weight:900;margin-bottom:22px}
+.sp-group{margin-bottom:14px}
+.sp-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:6px}
+.sp-inp{width:100%;border:1.5px solid #e0e0e0;border-radius:10px;padding:10px 14px;font-size:14px;font-family:inherit;outline:none}
+.sp-inp:focus{border-color:var(--gold)}
+.sp-btns{display:flex;gap:10px;margin-top:22px}
+.sp-save{flex:1;background:var(--gold);color:var(--dark);border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+.sp-cancel{background:none;border:1.5px solid #e0e0e0;color:var(--muted);border-radius:10px;padding:12px 20px;font-size:14px;cursor:pointer;font-family:inherit}
+</style>
+</head>
+<body>
+
+<!-- 대기 화면 -->
+<div id="welcome">
+  <div class="wc-topbar">
+    <img class="wc-topbar-logo" src="https://i.imgur.com/JnhzyCk.png" alt="Promega">
+    <div class="wc-topbar-right">
+      <span class="wc-topbar-date" id="wc-datestr"></span>
+      <span class="wc-topbar-time" id="wc-time"></span>
+    </div>
+  </div>
+  <div class="wc-logo-section">
+    <img class="wc-center-logo" src="https://i.imgur.com/JnhzyCk.png" alt="Promega">
+  </div>
+  <div class="wc-sub-section">
+    <div class="wc-sub" id="wc-sub">Welcome to Promega Korea & Biosystems</div>
+  </div>
+  <div class="wc-title-section">
+    <div class="wc-title" id="wc-title">Welcome to Promega Korea & Biosystems</div>
+  </div>
+  <div class="wc-footer">
+    <span class="wc-hint-icon">👆</span>
+    <span class="wc-hint-text">좌석 현황을 확인하려면 <strong>화면을 클릭</strong>해주세요</span>
+  </div>
+</div>
+
+<!-- 현황 화면 -->
+<div id="display">
+  <div class="dp-hdr">
+    <div class="dp-logo-wrap">
+      <div class="dp-mark">P</div>
+      <span class="dp-title">오늘의 좌석 현황</span>
+    </div>
+    <div class="dp-hdr-r">
+      <span class="dp-clock" id="dp-clock"></span>
+      <span class="dp-back-timer" id="dp-back-timer">30초 후 복귀</span>
+      <button class="dp-back-btn" id="dp-back-btn">← 대기화면으로</button>
+    </div>
+  </div>
+  <div class="dp-body">
+    <div class="dp-sidebar">
+      <div class="dp-sb-title">오늘의 좌석 현황</div>
+      <div class="dp-sb-date" id="dp-date"></div>
+      <div class="dp-legend">
+        <div class="dp-li"><div class="dp-ld" style="background:#2EA55A"></div>예약 가능</div>
+        <div class="dp-li"><div class="dp-ld" style="background:#D63030"></div>예약됨</div>
+      </div>
+      <div class="dp-stats">
+        <div class="dp-st"><div class="dp-sn" style="color:var(--gold)" id="dp-total">-</div><div class="dp-sl">전체</div></div>
+        <div class="dp-st"><div class="dp-sn" style="color:var(--green)" id="dp-avail">-</div><div class="dp-sl">가능</div></div>
+        <div class="dp-st"><div class="dp-sn" style="color:var(--red)" id="dp-taken">-</div><div class="dp-sl">예약됨</div></div>
+      </div>
+    </div>
+    <div class="dp-map-area">
+      <div class="fp">
+        <div class="fp-border"></div>
+        <div id="slayer"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button id="settings-btn" title="설정">⚙️</button>
+
+<div id="settings-panel">
+  <div class="sp-card">
+    <div class="sp-title">⚙️ 환영 메시지 설정</div>
+    <div class="sp-group">
+      <label class="sp-label">서브 텍스트 (회색 배경, 작은 글씨)</label>
+      <input class="sp-inp" id="sp-sub" type="text" placeholder="Welcome to Promega Korea & Biosystems">
+    </div>
+    <div class="sp-group">
+      <label class="sp-label">메인 타이틀 (흰색 배경, 큰 글씨)</label>
+      <input class="sp-inp" id="sp-title" type="text" placeholder="Welcome to Promega Korea & Biosystems">
+    </div>
+    <div class="sp-group">
+      <label class="sp-label">자동 복귀 시간 (초, 기본 30)</label>
+      <input class="sp-inp" id="sp-timer" type="number" placeholder="30" min="10" max="300">
+    </div>
+    <div class="sp-btns">
+      <button class="sp-cancel" id="sp-cancel">취소</button>
+      <button class="sp-save" id="sp-save">저장</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SHEET_URL='https://script.google.com/macros/s/AKfycbxEDWqIvmNvhX8_vt4vLruS9rwwV1Z23objsGY19PdEaGQ37OoZXcA7xB2ArvHd7O7tXw/exec';
+const SEATS=[
+  ['001',229,129,28,20],['002',265,129,28,20],
+  ['003',185,168,20,28],['004',185,202,20,28],
+  ['005',238,174,28,20],['006',238,202,28,20],
+  ['007',274,175,28,20],['008',274,201,28,20],
+  ['009',305,201,28,20],['010',337,201,28,20],
+  ['011',336,118,28,20],['012',335,147,28,20],
+  ['013',370,117,28,20],['014',371,146,28,20],
+  ['015',403,117,28,20],['016',406,146,28,20],
+  ['017',440,146,28,20],['018',472,146,28,20],
+  ['019',508,113,28,20],['020',541,113,28,20],['021',572,113,28,20],
+  ['022',515,205,28,20],['023',546,197,28,20],
+  ['024',604,186,28,20],['025',634,189,28,20],
+  ['026',691,227,28,20],
+  ['027',685,125,28,20],['028',716,125,28,20],
+  ['029',722,153,22,22],['030',701,179,22,22],
+  ['031',748,176,22,22],['032',726,198,22,22],
+  ['033',782,145,28,20],['034',783,167,28,20],['035',782,216,28,20],
+  ['036',813,145,28,20],['037',814,167,28,20],['038',813,216,28,20],
+];
+const TOTAL=SEATS.length;
+
+function getConfig(){try{return JSON.parse(localStorage.getItem('pk_display_config'))||{};}catch{return{};}}
+function saveConfig(c){localStorage.setItem('pk_display_config',JSON.stringify(c));}
+
+let backTimer=null, isDisplay=false;
+
+function getBackSecs(){return parseInt(getConfig().timer)||30;}
+
+// 시계
+function updateClock(){
+  const n=new Date();
+  document.getElementById('wc-time').textContent=n.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('wc-datestr').textContent=n.toLocaleDateString('ko-KR',{month:'long',day:'numeric',weekday:'short'});
+  document.getElementById('dp-clock').textContent=n.toLocaleTimeString('ko-KR');
+  document.getElementById('dp-date').textContent=n.toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'short'});
+}
+
+// Sheets 로드
+async function loadSeats(){
+  try{const r=await fetch(SHEET_URL+'?t='+Date.now());return await r.json();}
+  catch(e){console.error(e);return{};}
+}
+
+// 맵 렌더링
+function renderMap(data){
+  const layer=document.getElementById('slayer');
+  layer.innerHTML='';
+  let avail=0,taken=0;
+  SEATS.forEach(([id,l,t,w,h])=>{
+    const r=data[id];
+    const cls=r?'taken':'avail';
+    if(r)taken++;else avail++;
+    const el=document.createElement('div');
+    el.className=`seat ${cls}`;
+    el.style.cssText=`left:${l}px;top:${t}px;width:${w}px;height:${h}px`;
+    el.textContent=r?r.userName.slice(0,3):id;
+    layer.appendChild(el);
+  });
+  document.getElementById('dp-total').textContent=TOTAL;
+  document.getElementById('dp-avail').textContent=avail;
+  document.getElementById('dp-taken').textContent=taken;
+}
+
+// 현황 화면 열기
+async function showDisplay(){
+  if(isDisplay)return;
+  isDisplay=true;
+  document.getElementById('welcome').classList.add('hide');
+  document.getElementById('display').classList.add('show');
+  document.getElementById('slayer').innerHTML='<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;color:rgba(0,0,0,0.4)">⏳ 불러오는 중...</div>';
+  const data=await loadSeats();
+  renderMap(data);
+  startBackTimer();
+}
+
+// 대기 화면 복귀
+function showWelcome(){
+  isDisplay=false;
+  document.getElementById('display').classList.remove('show');
+  document.getElementById('welcome').classList.remove('hide');
+  clearInterval(backTimer);
+}
+
+// 복귀 타이머
+function startBackTimer(){
+  clearInterval(backTimer);
+  let secs=getBackSecs();
+  document.getElementById('dp-back-timer').textContent=`${secs}초 후 복귀`;
+  backTimer=setInterval(()=>{
+    secs--;
+    document.getElementById('dp-back-timer').textContent=`${secs}초 후 복귀`;
+    if(secs<=0){clearInterval(backTimer);showWelcome();}
+  },1000);
+}
+
+// 환영 메시지 적용
+function applyConfig(){
+  const cfg=getConfig();
+  if(cfg.title){document.getElementById('wc-title').innerHTML=cfg.title.replace(/\\n/g,'<br>');}
+  if(cfg.sub){document.getElementById('wc-sub').textContent=cfg.sub;}
+  document.getElementById('sp-title').value=cfg.title||'';
+  document.getElementById('sp-sub').value=cfg.sub||'';
+  document.getElementById('sp-timer').value=cfg.timer||30;
+}
+
+// 이벤트
+document.getElementById('welcome').addEventListener('click',showDisplay);
+document.getElementById('dp-back-btn').addEventListener('click',(e)=>{e.stopPropagation();showWelcome();});
+document.getElementById('settings-btn').addEventListener('click',(e)=>{
+  e.stopPropagation();
+  applyConfig();
+  document.getElementById('settings-panel').classList.add('open');
+});
+document.getElementById('sp-cancel').addEventListener('click',()=>document.getElementById('settings-panel').classList.remove('open'));
+document.getElementById('sp-save').addEventListener('click',()=>{
+  const cfg={
+    title:document.getElementById('sp-title').value.trim()||undefined,
+    sub:document.getElementById('sp-sub').value.trim()||undefined,
+    timer:document.getElementById('sp-timer').value.trim()||undefined,
+  };
+  saveConfig(cfg);applyConfig();
+  document.getElementById('settings-panel').classList.remove('open');
+});
+document.getElementById('settings-panel').addEventListener('click',(e)=>{
+  if(e.target===document.getElementById('settings-panel'))document.getElementById('settings-panel').classList.remove('open');
+});
+
+updateClock();
+setInterval(updateClock,1000);
+applyConfig();
+</script>
+</body>
+</html>
